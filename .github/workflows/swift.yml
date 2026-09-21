@@ -1,7 +1,4 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
-name: Swift
+name: Build macOS App
 
 on:
   push:
@@ -11,12 +8,44 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+      - uses: actions/checkout@v4
+      
+      - name: Construct Application Bundle
+        run: |
+          mkdir -p "MTGProxyArchitect.app/Contents/MacOS"
+          
+          # Generate Apple's required metadata file
+          cat << 'EOF' > MTGProxyArchitect.app/Contents/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>MTGProxyArchitect</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.proxies.architect</string>
+              <key>CFBundleName</key>
+              <string>MTG Proxy Architect</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>13.0</string>
+          </dict>
+          </plist>
+          EOF
+          
+          # Compile the raw Swift code directly into the app folder
+          swiftc App.swift -parse-as-library -o "MTGProxyArchitect.app/Contents/MacOS/MTGProxyArchitect"
+          
+          # Zip the final application
+          zip -r MTGProxyArchitect_Mac.zip MTGProxyArchitect.app
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MTGProxyArchitect_Mac
+          path: MTGProxyArchitect_Mac.zip
