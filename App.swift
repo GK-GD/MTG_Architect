@@ -222,22 +222,17 @@ class ProxyEngine: ObservableObject {
 }
 
 // MARK: - UI Views
-struct LoadingView: View {
-    @ObservedObject var engine: ProxyEngine
+struct ContentView: View {
+    @StateObject var engine = ProxyEngine()
+    
     var body: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-            if engine.isParsing {
-                Text("Querying Scryfall Database...")
-                Text("\(engine.parseProgress) / \(engine.parseTotal) Cards Fetched")
-                    .font(.system(.body, design: .monospaced))
-            } else if engine.isGenerating {
-                Text("Assembling Proxies...")
-                Text("\(engine.genProgress) / \(engine.genTotal) Pages Processed")
-                    .font(.system(.body, design: .monospaced))
-            }
+        if engine.cards.isEmpty && !engine.isParsing {
+            InputView(engine: engine)
+        } else if engine.isParsing || engine.isGenerating {
+            LoadingView(engine: engine)
+        } else {
+            GalleryView(engine: engine)
         }
-        .frame(minWidth: 500, minHeight: 400)
     }
 }
 
@@ -269,10 +264,12 @@ struct LoadingView: View {
             ProgressView()
             if engine.isParsing {
                 Text("Querying Scryfall Database...")
-                Text("\(engine.parseProgress) / \(engine.parseTotal) Cards Fetched").font(.monospaced)
+                Text("\(engine.parseProgress) / \(engine.parseTotal) Cards Fetched")
+                    .font(.system(.body, design: .monospaced))
             } else if engine.isGenerating {
                 Text("Assembling Proxies...")
-                Text("\(engine.genProgress) / \(engine.genTotal) Pages Processed").font(.monospaced)
+                Text("\(engine.genProgress) / \(engine.genTotal) Pages Processed")
+                    .font(.system(.body, design: .monospaced))
             }
         }
         .frame(minWidth: 500, minHeight: 400)
