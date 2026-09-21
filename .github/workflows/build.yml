@@ -10,7 +10,7 @@ jobs:
       - name: Construct Application Bundle
         run: |
           mkdir -p "MTGProxyArchitect.app/Contents/MacOS"
-
+          
           # Generate Apple's required metadata file
           cat << 'EOF' > MTGProxyArchitect.app/Contents/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
@@ -32,10 +32,10 @@ jobs:
           </dict>
           </plist>
           EOF
-
+          
           # Compile the raw Swift code directly into the app folder
-         swiftc App.swift -parse-as-library -o "MTGProxyArchitect.app/Contents/MacOS/MTGProxyArchitect"
-
+          swiftc App.swift -parse-as-library -o "MTGProxyArchitect.app/Contents/MacOS/MTGProxyArchitect"
+          
           # Zip the final application
           zip -r MTGProxyArchitect_Mac.zip MTGProxyArchitect.app
 
