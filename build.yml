@@ -34,7 +34,7 @@ jobs:
           EOF
 
           # Compile the raw Swift code directly into the app folder
-          swiftc Main.swift -parse-as-library -o "MTGProxyArchitect.app/Contents/MacOS/MTGProxyArchitect"
+         swiftc App.swift -parse-as-library -o "MTGProxyArchitect.app/Contents/MacOS/MTGProxyArchitect"
 
           # Zip the final application
           zip -r MTGProxyArchitect_Mac.zip MTGProxyArchitect.app
